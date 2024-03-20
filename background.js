@@ -1,25 +1,8 @@
+// background.js
 const UI_DELAY_FIX = 200;
 const TARGET_TITLE = "ai-stealth-challenge.tiiny.site"
 const TARGET_HOST = "https://ai-stealth-challenge.tiiny.site/"
 let ID;
-
-/**
- * Activates a tab.
- *
- * @param {!chrome.tabs.Tab} tab The tab that you want muted.
- * @return {!Promise<!chrome.tabs.Tab>}
- */
-async function activateTab(tab) {
-    return new Promise(
-        /**
-         * 
-         * @param {chrome.tabs.Tab} resolve
-         * @return void
-         */
-        (resolve) => {
-            return chrome.tabs.update(tab.id, {active: true}, resolve);
-        });
-}
 
 /**
  *
@@ -42,8 +25,6 @@ async function setActiveTabById(tabId) {
 
 }
 
-
-// background.js
 chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
 
     const id = tabId;
@@ -52,17 +33,17 @@ chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
 
     if (changeInfo.status === 'complete') {
 
+        // track the target demo window.
         if (tab.title === TARGET_TITLE) {
             ID = tab.id;
         }
 
         chrome.tabs.onActivated.addListener(function (tab) {
             console.info('[chrome.tabs.onActivated]', tab);
-            // fix bug
+            // fix ui lag bug
             setTimeout(async function () {
                 await setActiveTabById(ID);
             }, UI_DELAY_FIX);
-
         })
     }
 })
