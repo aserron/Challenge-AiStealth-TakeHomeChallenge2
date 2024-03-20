@@ -14,6 +14,7 @@
                 "contentScript.js"
             ],
             "matches": [
+                "https://ai-stealth-challenge.tiiny.site/",
                 "https://ai-stealth-challenge.web.app/*"
             ],
             "run_at": "document_idle",

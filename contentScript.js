@@ -81,4 +81,5 @@ function start() {
     setInterval(log, 1000)
 }
 
+console.info('Start Injection')
 start()

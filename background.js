@@ -1,27 +1,68 @@
-/* 
-This is the background script for the extension, it runs in the background of the browser.
+const UI_DELAY_FIX = 200;
+const TARGET_TITLE = "ai-stealth-challenge.tiiny.site"
+const TARGET_HOST = "https://ai-stealth-challenge.tiiny.site/"
+let ID;
 
-Video walkthrough: https://vimeo.com/923628666
+/**
+ * Activates a tab.
+ *
+ * @param {!chrome.tabs.Tab} tab The tab that you want muted.
+ * @return {!Promise<!chrome.tabs.Tab>}
+ */
+async function activateTab(tab) {
+    return new Promise(
+        /**
+         * 
+         * @param {chrome.tabs.Tab} resolve
+         * @return void
+         */
+        (resolve) => {
+            return chrome.tabs.update(tab.id, {active: true}, resolve);
+        });
+}
 
-Goal: Ensure that there is a continuous stream of timestamps logged from contentScript.js
+/**
+ *
+ * @param {number} tabId
+ * @return {Promise<boolean>}
+ */
+async function setActiveTabById(tabId) {
+    const updateProperties = {'active': true};
+    let result = false;
+    try {
+        await chrome.tabs.update(tabId, updateProperties, (tab) => {
+            console.log("[setTabActive] update successful.  active=true");
+            result = true;
+        });
+    } catch (e) {
+        console.error('[setTabActive] ', e);
+    }
 
-Rules: 
-You can only change one file: this background.js file. 
-No DOM manipulation allowed such as overriding document.visibilityState.
-When testing your code we will use the original files and only update the background.js file.
+    return Promise.resolve(result);
 
-Testing: Use this site for easy testing https://ai-stealth-challenge.tiiny.site/
+}
 
-Hint: The solution is only a few lines of code.
-*/
 
-setTimeout(()=>{
-    console.log("STO: background.js running") // background console logs can be found by inspecting the extension in chrome://extensions > developer mode > then click on "service worker" > then go to console    
-},1000)
+// background.js
+chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
 
-requestAnimationFrame(()=>{
-    console.log("RAF: background.js running") // background console logs can be found by inspecting the extension in chrome://extensions > developer mode > then click on "service worker" > then go to console
+    const id = tabId;
+
+    console.info('[chrome.tabs.onUpdated] tab id=%s', tabId, changeInfo, tab);
+
+    if (changeInfo.status === 'complete') {
+
+        if (tab.title === TARGET_TITLE) {
+            ID = tab.id;
+        }
+
+        chrome.tabs.onActivated.addListener(function (tab) {
+            console.info('[chrome.tabs.onActivated]', tab);
+            // fix bug
+            setTimeout(async function () {
+                await setActiveTabById(ID);
+            }, UI_DELAY_FIX);
+
+        })
+    }
 })
-
-
-/* YOUR CODE BELOW THIS LINE :) */  

@@ -1,0 +1,22 @@
+{
+  "include": ["*.*"],
+  "compilerOptions": {
+    "rootDir": ".",
+    "baseUrl": "./",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "WebWorker",
+      "WebWorker.ImportScripts",
+      "Webworker.Iterable",
+      "ES2022"
+    ],
+    "moduleDetection": "auto",
+    "module": "ESNext",
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "allowJs": true,
+    "checkJs": false,
+    "target": "ES2019"
+  }
+}
